@@ -1,7 +1,7 @@
 # Binance API
 
 To read full documentation, specs and find out which request params are required/optional, please visit the official
-[documentation](https://www.binance.com/restapipub.html) page.
+[documentation](https://www.com/restapipub.html) page.
 
 ## Getting started
 
@@ -10,20 +10,20 @@ var logger log.Logger
 logger = log.NewLogfmtLogger(log.NewSyncWriter(os.Stderr))
 logger = log.With(logger, "time", log.DefaultTimestampUTC, "caller", log.DefaultCaller)
 
-hmacSigner := &binance.HmacSigner{
+hmacSigner := &HmacSigner{
     Key: []byte("API secret"),
 }
 ctx, _ := context.WithCancel(context.Background())
 // use second return value for cancelling request when shutting down the app
 
-binanceService := binance.NewAPIService(
-    "https://www.binance.com",
+binanceService := NewAPIService(
+    "https://www.com",
     "API key",
     hmacSigner,
     logger,
     ctx,
 )
-b := binance.NewBinance(binanceService)
+b := NewBinance(binanceService)
 ```
 
 ## Examples
@@ -33,18 +33,18 @@ Following provides list of main usages of library. See `example` package for tes
 Each call has its own *Request* structure with data that can be provided. The library is not responsible for validating
 the input and if non-zero value is used, the param is sent to the API server.
 
-In case of an standard error, instance of `binance.Error` is returned with additional info.
+In case of an standard error, instance of `Error` is returned with additional info.
 
 ### NewOrder
 
 ```go
-newOrder, err := b.NewOrder(binance.NewOrderRequest{
+newOrder, err := b.NewOrder(NewOrderRequest{
     Symbol:      "BNBETH",
     Quantity:    1,
     Price:       999,
-    Side:        binance.SideSell,
-    TimeInForce: binance.GTC,
-    Type:        binance.TypeLimit,
+    Side:        SideSell,
+    TimeInForce: GTC,
+    Type:        TypeLimit,
     Timestamp:   time.Now(),
 })
 if err != nil {
@@ -56,7 +56,7 @@ fmt.Println(newOrder)
 ### CancelOrder
 
 ```go
-canceledOrder, err := b.CancelOrder(binance.CancelOrderRequest{
+canceledOrder, err := b.CancelOrder(CancelOrderRequest{
     Symbol:    "BNBETH",
     OrderID:   newOrder.OrderID,
     Timestamp: time.Now(),
@@ -70,9 +70,9 @@ fmt.Printf("%#v\n", canceledOrder)
 ### Klines
 
 ```go
-kl, err := b.Klines(binance.KlinesRequest{
+kl, err := b.Klines(KlinesRequest{
     Symbol:   "BNBETH",
-    Interval: binance.Hour,
+    Interval: Hour,
 })
 if err != nil {
     panic(err)
@@ -86,7 +86,7 @@ fmt.Printf("%#v\n", kl)
 interrupt := make(chan os.Signal, 1)
 signal.Notify(interrupt, os.Interrupt)
 
-kech, done, err := b.TradeWebsocket(binance.TradeWebsocketRequest{
+kech, done, err := b.TradeWebsocket(TradeWebsocketRequest{
     Symbol: "ETHBTC",
 })
 if err != nil {
